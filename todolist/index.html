@@ -5,30 +5,32 @@
 		<title></title>
         <link rel="stylesheet" href="https://ez-css.now.sh">
         <style>
-            .done {
+            .completed {
                 text-decoration: line-through;
             }
         </style>
 	</head>
 	<body>
 		<main id="app">
-			<h1>{{title}}</h1>
+			<h1>{{titlevue}}</h1>
 			<form @submit.prevent="addTodo">
 				<label for="newTodo">New Todo</label>
-				<input  v-model="newTodo" type="text" name="newTodo" id="newTodo" value=""></input>
+				<input  v-model="newTodo" type="text" name="newTodo" value=""></input>
 				<button type="submit" name="button">Add Todo</button>
             </form>
-            <button @click="allDone()" type="button" name="button">All Done</button>
+            <button @click="allCompleted()" type="button" name="button">All Completed</button>
 			<ul>
-                <li v-for="todo in todos">
-                    <input type="checkbox" v-model="todo.done">
-                    <span :class="{done: todo.done }">{{todo.title}}</span>
+                <li v-for="todo in todos" >
+                    <input type="checkbox" v-model="todo.completed">
+                    <span :class="{completed: todo.completed }">{{todo.title}}</span>
                     <button @click="removeTodo(todo)" type="button" name="button">Remove</button>
                     
                 </li>
             </ul>
 		</main>		
 		<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+		
 		<script src="main.js" charset="utf-8"></script>
+        
 	</body>
 </html>

@@ -1,3 +1,5 @@
+
+
 const app = new Vue({
 	el: '#app',
 	data: {
@@ -6,21 +8,45 @@ const app = new Vue({
         todos: [],
 	},
 	methods: {
-		addTodo(){
-			this.todos.push({
-                title: this.newTodo,
-                done: false,
-            });
-            this.newTodo = '';
-        },
+
+
+		addTodo() {  
+            var value = this.newTodo && this.newTodo.trim()  
+            if (!value) {  
+            return  
+            }  
+			import api from '../Api';
+            api.createNew(value, false).then( (response) => {  
+
+                this.$log.debug("New item created:", response); 
+
+                     this.todos.push({  
+                        id: response.data.id,  
+                        title: value,  
+                        completed: false,  
+                     }) 
+
+            }).catch((error) => {  
+                 this.$log.debug(error);  
+                 this.error = "Failed to add todo"  
+                });  
+        
+            this.newTodo = ''  
+        }, 
+
         removeTodo(todo) {
             const todoIndex = this.todos.indexOf(todo);
             this.todos.splice(todoIndex, 1);
         },
-        allDone() {
+
+        allCompleted() {
             this.todos.forEach(todo => {
-                todo.done = true;
+            todo.completed = true;
             });
         }   
 	}
+	
 });
+
+
+

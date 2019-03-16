@@ -1,0 +1,115 @@
+
+
+mounted() {
+      // inject some startup data
+      this.todos = [{title: 'Drink coffee', completed:false},{title: 'Write REST API', completed:false}];
+      // hide the loading message
+      this.loading = false;
+    },
+	
+	
+	
+Add Client Logic to Handle API Requests
+Under the client/src directory, add a file named Api.js with the following contents:
+
+import axios from 'axios'  
+  
+const SERVER_URL = 'http://localhost:9000';  
+  
+const instance = axios.create({  
+  baseURL: SERVER_URL,  
+  timeout: 1000  
+});  
+  
+export default {  
+  // (C)reate  
+  createNew: (text, completed) => instance.post('todos', {title: text, completed: completed}),  
+  // (R)ead  
+  getAll: () => instance.get('todos', {  
+    transformResponse: [function (data) {  
+      return data? JSON.parse(data)._embedded.todos : data;  
+    }]  
+  }),  
+  // (U)pdate  
+  updateForId: (id, text, completed) => instance.put('todos/'+id, {title: text, completed: completed}),  
+  // (D)elete  
+  removeForId: (id) => instance.delete('todos/'+id)  
+}
+
+
+
+Load Data From the Server
+Now you need to change the Todos component (src/components/Todos.vue) so that it loads data from the Spring Boot REST server.
+
+First thing is to import the Api module you just created. Beneath the <template></template> section, just below the <script> tag, add the following line:
+
+import api from '../Api';
+Next change the mounted() method to this:
+
+mounted() {  
+  api.getAll()  
+    .then(response => {  
+      this.$log.debug("Data loaded: ", response.data)  
+      this.todos = response.data  
+  })  
+    .catch(error => {  
+      this.$log.debug(error)  
+      this.error = "Failed to load todos"  
+  })  
+    .finally(() => this.loading = false)  
+},
+
+
+
+
+
+
+
+Finish the CRUD Methods
+To finish integrating the client CRUD methods, in the Todos.vue module, update the methods() function to match the following:
+
+methods: {  
+  
+  addTodo: function () {  
+    var value = this.newTodo && this.newTodo.trim()  
+    if (!value) {  
+      return  
+	}  
+  
+    api.createNew(value, false).then( (response) => {  
+      this.$log.debug("New item created:", response);  
+	  this.todos.push({  
+        id: response.data.id,  
+		title: value,  
+		completed: false  
+	  })  
+    }).catch((error) => {  
+      this.$log.debug(error);  
+	  this.error = "Failed to add todo"  
+	});  
+  
+    this.newTodo = ''  
+  },  
+  
+  
+  
+  
+  removeTodo: function (todo) { // notice NOT using "=>" syntax  
+    api.removeForId(todo.id).then(() => { // notice AM using "=>" syntax  
+      this.$log.debug("Item removed:", todo);  
+      this.todos.splice(this.todos.indexOf(todo), 1)  
+    }).catch((error) => {  
+      this.$log.debug(error);  
+      this.error = "Failed to remove todo"  
+    });
+  },  
+  
+  
+  il faudrait aussi modifier la méthode pour alldone
+
+
+
+
+
+
+
