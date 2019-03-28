@@ -11,6 +11,4 @@ import org.springframework.data.rest.core.annotation.RepositoryRestResource;
    You could, however, define some custom access methods in this class if you needed to.  */
 
 @RepositoryRestResource
-public interface TodoRepository extends JpaRepository<Todo, Long> {
-
-}
+public interface TodoRepository extends JpaRepository<Todo, Long> {}
